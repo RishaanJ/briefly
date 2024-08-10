@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 
 
 function Main(){
+    useEffect(() => {
+        document.title = "Main Page - Briefly";
+    }, []);
     return (
         <>
             <h1>Hey</h1>

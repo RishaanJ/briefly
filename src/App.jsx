@@ -6,6 +6,7 @@ import './App.css';
 import Register from './components/register';
 import Login from './components/login'
 import Main from './components/main'
+import Error from './components/error'
 import Logo from './assets/BRIEFLY.png'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/main" element={<Main />} />
+        <Route path="/error/:id" element={<Error/>}/>
         {/* Add a default route */}
         <Route
           path="*"

@@ -3,8 +3,9 @@ import '../componentscss/register.css';
 import Logo from "../assets/BRIEFLY.png"
 import { ToastContainer, toast } from 'react-toastify';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {auth} from './firebase';
+import {auth, db} from './firebase';
 import 'react-toastify/dist/ReactToastify.css';
+import {setDoc, doc} from "firebase/firestore"
 
 function Register() {
     const [email, setEmail] = useState('');
@@ -16,8 +17,15 @@ function Register() {
         try{
             await createUserWithEmailAndPassword(auth, email, password);
             const user = auth.currentUser;
-            console.log(user)
-            toast.success("Welcome to Briefly!", {position:"top-right"});
+            if(user){
+                await setDoc(doc(db, "Users", user.uid), {
+                    email: user.email,
+                    username: username
+
+                })
+                toast.success("Welcome to Briefly!", {position:"top-right"});
+            }
+            
 
         }catch(error){
             toast.error(error, {position: "top-right"})

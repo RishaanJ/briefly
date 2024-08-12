@@ -3,7 +3,8 @@ import {auth, db} from './firebase'
 import {doc, getDoc} from 'firebase/firestore'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Logo from "../assets/BRIEFLY.png"
+import '../componentscss/main.css'
 
 
 function Main(){
@@ -39,11 +40,36 @@ function Main(){
     }, []);
 
     return (
-        <div>
+        <div className='main-page-div'>
             {userDetails ? (
                 <>
-                    <h1>Hey {userDetails.username}</h1>
-                    <button onClick={() => handleLogout()}>Logout</button>
+                    <div className='top-part-of-main'>
+                        <img src={Logo}/>
+                        <div className='info'>
+                            <h1>Hey {userDetails.username}</h1>
+                            <button onClick={() => handleLogout()}>Logout</button>
+                        </div>
+                    </div>
+                    <div className='main-page-content-container'>
+                        <div className='sidebar-main-page-content'>
+                            <div className='chats'>
+                                <img src="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg?cs=srgb&dl=pexels-andre-mouton-1207875.jpg&fm=jpg" className='image-for-groupchat'/>
+                                <h2>SBB 💗</h2>
+                            </div>
+                            <div className='chats'>
+                                <img src="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg?cs=srgb&dl=pexels-andre-mouton-1207875.jpg&fm=jpg" className='image-for-groupchat'/>
+                                <h2>JAZZ 💗</h2>
+                            </div>
+                            <div className='chats'>
+                                <img src="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg?cs=srgb&dl=pexels-andre-mouton-1207875.jpg&fm=jpg" className='image-for-groupchat'/>
+                                <h2>RNB 💗</h2>
+                            </div>
+                        </div>
+                        <div className='main-page-content'>
+                            
+                        </div>
+                    </div>
+                    
                 </>
             ) : (
                 <h1>Not Logged In :C</h1>

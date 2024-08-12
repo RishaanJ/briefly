@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../componentscss/register.css';
 import Logo from "../assets/BRIEFLY.png"
 
@@ -9,8 +9,11 @@ function Login() {
         // Handle registration logic here
         console.log({ email, username, password });
     };
-
+    useEffect(() => {
+        document.title = "Login - Briefly"
+    })
     return (
+
         <>
             <img src={Logo}/>
             <div className="register-container">

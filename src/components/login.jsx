@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import '../componentscss/register.css';
 import Logo from "../assets/BRIEFLY.png"
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import {auth} from './firebase'
 
 function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle registration logic here
-        console.log({ email, username, password });
+        try{
+            await signInWithEmailAndPassword(auth, email, password)
+            toast.success("Welcome back!", {position:"top-right"})
+
+        }catch(error){
+            toast.error(error, {position:"top-right"})
+
+        }
     };
     useEffect(() => {
         document.title = "Login - Briefly"
@@ -24,6 +36,8 @@ function Login() {
                         <input
                             type="email"
                             id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
@@ -32,6 +46,8 @@ function Login() {
                         <input
                             type="password"
                             id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
@@ -39,6 +55,7 @@ function Login() {
                     <h1 className='already'>Don't have an account? <a className='already' href="/register">Register Here</a></h1>
                 </form>
             </div>
+            <ToastContainer/>
         </>
     );
 }

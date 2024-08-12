@@ -42,7 +42,7 @@ input {
     font-size: 20px;
 }
 
-button {
+.button {
     padding: 10px;
     background-color: #007bff;
     color: white;
@@ -57,7 +57,7 @@ button {
     
 }
 
-button:hover {
+.button:hover {
     background-color: #0056b3;
     border-radius: 30px;
     transform: scale(1.1);

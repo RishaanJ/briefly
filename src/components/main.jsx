@@ -47,7 +47,7 @@ function Main(){
                         <img src={Logo}/>
                         <div className='info'>
                             <h1>Hey {userDetails.username}</h1>
-                            <button onClick={() => handleLogout()}>Logout</button>
+                            <button className="button" onClick={() => handleLogout()}>Logout</button>
                         </div>
                     </div>
                     <div className='main-page-content-container'>
@@ -66,7 +66,13 @@ function Main(){
                             </div>
                         </div>
                         <div className='main-page-content'>
-                            
+                            <div className='chat-messages'>
+
+                            </div>
+                            <div className='send-smt'>
+                                <input type='text'></input>
+                                <button>✈️</button>
+                            </div>
                         </div>
                     </div>
                     

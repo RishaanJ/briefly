@@ -71,7 +71,7 @@ function Register() {
                             required
                         />
                     </div>
-                    <button type="submit">Register</button>
+                    <button className="button" type="submit">Register</button>
                     <h1 className='already'>Already have an account? <a href={"/login"}className='already'>Login Here</a></h1>
                 </form>
             </div>

@@ -50,7 +50,7 @@ function Main() {
                                 <h1>Hey, {userDetails.username}</h1>
                                 <button className="button" onClick={handleLogout}>Logout</button>
                             </div>
-                            <img src="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg?cs=srgb&dl=pexels-andre-mouton-1207875.jpg&fm=jpg"/>
+                            <img onClick={() => window.location.href = "/settings"} src={userDetails.pfp}/>
 
                         </div>
                     </div>

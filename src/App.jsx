@@ -8,6 +8,7 @@ import Login from './components/login'
 import Main from './components/main'
 import Error from './components/error'
 import Logo from './assets/BRIEFLY.png'
+import Settings from './components/settings'
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,6 +20,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/main" element={<Main />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/error/:id" element={<Error/>}/>
         {/* Add a default route */}
         <Route

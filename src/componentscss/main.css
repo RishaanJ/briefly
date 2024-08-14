@@ -39,7 +39,19 @@ html, body {
     height: 200px;
     object-fit: cover;
     border-radius: 50%;
+    cursor: pointer;
+    transition-duration: .2s;
 }
+
+.info img:hover::before {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #000000;
+}
+
+.info img:hover {
+    box-shadow: 0 0 5px #000000;
+    text-shadow: 0 0 5px #000000;
+  }
 
 .text-info{
     text-align: right;

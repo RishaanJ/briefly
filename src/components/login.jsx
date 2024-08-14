@@ -15,6 +15,7 @@ function Login() {
         try{
             await signInWithEmailAndPassword(auth, email, password)
             toast.success("Welcome back!", {position:"top-right"})
+            window.location.href = "/main"
 
         }catch(error){
             toast.error(error, {position:"top-right"})

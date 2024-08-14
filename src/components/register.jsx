@@ -20,7 +20,8 @@ function Register() {
             if(user){
                 await setDoc(doc(db, "Users", user.uid), {
                     email: user.email,
-                    username: username
+                    username: username,
+                    pfp: "https://braverplayers.org/wp-content/uploads/2022/09/braver-blank-pfp.jpg"
 
                 })
                 toast.success("Welcome to Briefly!", {position:"top-right"});

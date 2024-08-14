@@ -1,3 +1,4 @@
+/* General Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -8,10 +9,12 @@ html, body {
     height: 100%;
     margin: 0;
 }
+
 ::-webkit-scrollbar {
     display: none;
 }
 
+/* Top Part Styles */
 .top-part-of-main {
     display: flex;
     flex-direction: row;
@@ -25,25 +28,43 @@ html, body {
     box-sizing: border-box;
 }
 
+.info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+.info img{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.text-info{
+    text-align: right;
+    margin-right: 15px;
+}
+
+/* Main Page Content Styles */
 .main-page-content-container {
     display: flex;
     flex-direction: row;
-    width: 100vw; /* Full viewport width */
-    max-width: 1850px; /* Max width to constrain the content */
+    width: 100vw;
+    max-width: 1850px;
     justify-content: space-between;
     position: relative;
     left: 50%;
-    transform: translateX(-50%); /* Centers the container */
-    margin-top: 300px; /* Space for the fixed header */
+    transform: translateX(-50%);
+    margin-top: 300px;
     box-sizing: border-box;
     align-items: flex-start;
 }
 
-
 .sidebar-main-page-content {
     display: flex;
     flex-direction: column;
-    margin-right: 30px; /* Adjust if necessary */
+    margin-right: 30px;
 }
 
 .chats {
@@ -54,13 +75,15 @@ html, body {
     align-items: center;
     border-radius: 15px;
     padding: 10px 5px;
-    transition-duration: .2s;
+    transition-duration: 0.2s;
     background-color: white;
     cursor: pointer;
 }
-.chats:hover{
+
+.chats:hover {
     background-color: rgb(201, 201, 201) !important;
 }
+
 .chats img {
     width: 100px;
     height: 100px;
@@ -69,9 +92,9 @@ html, body {
     margin-right: 20px;
 }
 
-
+/* Chat Window Styles */
 .main-page-content {
-    flex: 1; /* Allows it to take up remaining space */
+    flex: 1;
     border-radius: 14px;
     height: 650px;
     display: flex;
@@ -80,7 +103,7 @@ html, body {
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
-.send-smt{
+.send-smt {
     display: flex;
     flex-direction: row;
     margin-top: auto;
@@ -88,22 +111,23 @@ html, body {
     margin-bottom: 10px;
     padding: 10px 5px;
 }
-.send-smt input{
+
+.send-smt input {
     margin-left: 15px;
     height: 80px;
     border-radius: 50px;
     font-size: 25px;
 }
 
-.send-smt input:focus{
+.send-smt input:focus {
     outline: none;
 }
 
-.send-smt button{
+.send-smt button {
     width: 85px;
     height: 80px;
     font-size: 30px;
-    transition-duration: .5s;
+    transition-duration: 0.5s;
     text-decoration: none;
     border: none;
     background-color: #007bff;
@@ -111,18 +135,19 @@ html, body {
     border-radius: 20px;
     cursor: pointer;
 }
-.send-smt button:hover{
+
+.send-smt button:hover {
     background-color: rgb(166, 165, 165);
     border-radius: 15px;
 }
 
-
-
-.svg-button-send{
+.svg-button-send {
     background-color: rgba(255, 255, 255, 0);
     width: 50px;
+    fill: white;
 }
 
+/* Chat Messages Container */
 .chat-messages {
     flex: 1;
     overflow-y: auto;
@@ -132,27 +157,70 @@ html, body {
     gap: 15px;
 }
 
+/* Message Bubble Styles */
+.message-container {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+.message-container.sent {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.message-container.received {
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.profile-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+    object-fit: cover;
+}
+
 .message {
-    max-width: 70%;
-    padding: 15px;
-    border-radius: 15px;
-    font-size: 18px;
-    line-height: 1.4;
-    color: black;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 60%;
+    display: inline-block;
     position: relative;
-    background-color: inherit;
-    color: white;
 }
 
 .message.sent {
     background-color: #007bff;
-    align-self: flex-end;
+    color: white; 
     border-bottom-right-radius: 0;
+    margin-left: 10px;
 }
 
 .message.received {
-    background-color: #b388eb;
-    align-self: flex-start;
+    background-color: #403c3c;
+    color: white;
     border-bottom-left-radius: 0;
+    margin-right: 10px;
 }
 
+/* Hide profile photo for sent messages */
+.message-container.sent .profile-photo {
+    display: none;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #ccc;
+    margin-top: 5px;
+    text-align: right;
+    display: block;
+}
+
+.message-container.received .timestamp {
+    font-size: 12px;
+    color: #ccc;
+    margin-top: 5px;
+    text-align: left;
+    display: block;
+}

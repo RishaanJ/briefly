@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logo from "../assets/BRIEFLY.png";
 import '../componentscss/main.css';
+import ChatMessage from './chatmessage'; // Import the ChatMessage component
 
 function Main() {
     const [userDetails, setUserDetails] = useState(null);
@@ -45,8 +46,12 @@ function Main() {
                     <div className='top-part-of-main'>
                         <img src={Logo} alt="Logo" />
                         <div className='info'>
-                            <h1>Hey {userDetails.username}</h1>
-                            <button className="button" onClick={handleLogout}>Logout</button>
+                            <div className='text-info'>
+                                <h1>Hey, {userDetails.username}</h1>
+                                <button className="button" onClick={handleLogout}>Logout</button>
+                            </div>
+                            <img src="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg?cs=srgb&dl=pexels-andre-mouton-1207875.jpg&fm=jpg"/>
+
                         </div>
                     </div>
                     <div className='main-page-content-container'>
@@ -66,13 +71,32 @@ function Main() {
                         </div>
                         <div className='main-page-content'>
                             <div className='chat-messages'>
-                                {/* Add chat message components here */}
-                                <div className='message received'>
-                                    <p><strong>User:</strong> Hello!</p>
-                                </div>
-                                <div className='message sent'>
-                                    <p><strong>You:</strong> LOVEBOMBER BABY YOU TOOK MY HEART, YOU CRUSHED IT BADLY, TORE IT APART, YOU GOT ME TEXTING AND GOT ME WAITING, I FELL IN LOVE WITH YOU RIGHT FROM THE START UMM NANANA UMM NANAN UMM NANANNANA AN</p>
-                                </div>
+                                {/* Replace hardcoded messages with ChatMessage components */}
+                                <ChatMessage
+                                    Text="Bro we saw the same one and named him kanye cuz he came to use when we were playing runaway"
+                                    Pfp="https://scontent.cdninstagram.com/v/t51.2885-19/452325340_2468852763315742_4989731620836503120_n.jpg?stp=dst-jpg_p100x100&_nc_cat=102&ccb=1-7&_nc_sid=fcb8ef&_nc_ohc=3XwgRaK0j8AQ7kNvgG6Jeuz&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.cdninstagram.com&oh=00_AYBBTI-1EGEl6ybcWtu49w_EBzDKjbaW3mimuky297y8nQ&oe=66C1C04D"
+                                    Time="10:30 AM"
+                                    sent={false} // Received message
+                                />
+                                <ChatMessage
+                                    Text="lmfao"
+                                    Pfp="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg"
+                                    Time="10:32 AM"
+                                    sent={true} // Sent message
+                                />
+                                <ChatMessage
+                                    Text="can u pull up tmrw, ill let u borrow my bike"
+                                    Pfp="https://scontent.cdninstagram.com/v/t51.2885-19/452325340_2468852763315742_4989731620836503120_n.jpg?stp=dst-jpg_p100x100&_nc_cat=102&ccb=1-7&_nc_sid=fcb8ef&_nc_ohc=3XwgRaK0j8AQ7kNvgG6Jeuz&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.cdninstagram.com&oh=00_AYBBTI-1EGEl6ybcWtu49w_EBzDKjbaW3mimuky297y8nQ&oe=66C1C04D"
+                                    Time="10:32 AM"
+                                    sent={false} // Sent message
+                                />
+                                <ChatMessage
+                                    Text="fo sho, cya tmrw"
+                                    Pfp="https://images.pexels.com/photos/1207875/pexels-photo-1207875.jpeg"
+                                    Time="10:32 AM"
+                                    sent={true} // Sent message
+                                />
+
                             </div>
                             <div className='send-smt'>
                                 <input type='text' placeholder='Type a message...' />

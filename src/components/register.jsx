@@ -25,6 +25,7 @@ function Register() {
 
                 })
                 toast.success("Welcome to Briefly!", {position:"top-right"});
+                window.location.href = "/main"
             }
             
 

@@ -6,49 +6,30 @@ import 'react-toastify/dist/ReactToastify.css';
 import Logo from "../assets/BRIEFLY.png";
 import '../componentscss/main.css';
 import ChatMessage from './chatmessage';
+import EmojiPicker from 'emoji-picker-react';
 
 function Main() {
     const [userDetails, setUserDetails] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
 
-    const emojiMap = {
-        ':skull:': '💀',
-        ':smile:': '😊',
-        ':heart:': '❤️',
-        ':fire:': '🔥',
-        ':100:': '💯',
-        ':skull_crossbones:': '☠️',
-        ':clap:': '👏',
-        ':eyes:': '👀',
-        ':cry:': '😢',
-        ':laugh:': '😂',
-        ':thumbsup:': '👍',
-        ':thumbsdown:': '👎',
-        ':sparkles:': '✨',
-        ':wave:': '👋',
-        ':blush:': '😊',
-        ':angry:': '😠',
-        ':sleeping:': '😴',
-        ':sob:': '😭',
-        ':star:': '⭐',
-        ':party:': '🎉',
-        ':ok_hand:': '👌',
-        ':sunglasses:': '😎',
-        ':heart_eyes:': '😍',
-        ':poop:': '💩',
-        ':raised_hands:': '🙌',
-        ':yawning:': '😪',
-        ':pray:': '🙏',
-        ':hype:': '🙌', 
-        ':dancer:': '💃',
-        ':zany:': '🤪',
-        ':scream:': '😱',
-        ':relieved:': '😌',
-        ':grimacing:': '😬',
-        ':sweat:': '😓',
-        ':tada:': '🎊',
-      };
+    const toggleEmojiPicker = () => {
+        setShowEmojiPicker(!showEmojiPicker);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiButtonRef.current && !emojiButtonRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
       
 
     const fetchUserData = async () => {
@@ -257,8 +238,18 @@ function Main() {
                                     e.target[0].value = ''; 
                                 }
                             }}>
+                                <div className='emoji-picker-container' ref={emojiButtonRef}>
+                                    <svg onClick={toggleEmojiPicker} className="emojiPickerButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm177.6 62.1C192.8 334.5 218.8 352 256 352s63.2-17.5 78.4-33.9c9-9.7 24.2-10.4 33.9-1.4s10.4 24.2 1.4 33.9c-22 23.8-60 49.4-113.6 49.4s-91.7-25.5-113.6-49.4c-9-9.7-8.4-24.9 1.4-33.9s24.9-8.4 33.9 1.4zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                                    </svg>
+                                    {showEmojiPicker && (
+                                        <div className='emoji-picker'>
+                                            <EmojiPicker onEmojiClick={() => { /* Add logic to handle emoji clicks here later */ }} />
+                                        </div>
+                                    )}
+                                </div>
                                 <input type='text' placeholder='Type a message...' />
-                                <button>
+                                <button className='buttton'>
                                     <svg className='svg-button-send' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
                                     </svg>

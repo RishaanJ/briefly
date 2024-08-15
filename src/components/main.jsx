@@ -71,24 +71,61 @@ function Main() {
             return v.toString(16);
         });
     }
-
+    function replaceWord(str, targetWord, replacementWord) {
+        const regex = new RegExp(`\\b${targetWord}(?:a|er)?\\b`, 'gi');
+        return str.replace(regex, replacementWord);
+    }
     async function sendMessage(message) {
-        console.log("message sent: " + message);
+        function sanitizeMessage(msg) {
+            const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
+            return msg.replace(offensivePattern, 'ninja');
+        }
+    
+        const sanitizedMessage = sanitizeMessage(message);
+    
+        console.log("message sent: " + sanitizedMessage);
+    
+        const now = new Date();
+        const timestamp = now.getTime(); 
         if (userDetails && auth.currentUser) {
             await setDoc(doc(db, "Chats", generateUID()), {
-                messageContent: message,
+                messageContent: sanitizedMessage,
                 date: getCurrentTime(),
                 profilePic: userDetails.pfp,
-                senderUid: auth.currentUser.uid
+                senderUid: auth.currentUser.uid,
+                REALtime: timestamp
             });
         }
     }
+    
+    useEffect(() => {
+        const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const docRef = doc(db, "Users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setUserDetails(docSnap.data());
+                } else {
+                    console.log("User document does not exist in Firestore");
+                }
+            } else {
+                setUserDetails(null);
+            }
+        });
+
+        return () => unsubscribeAuth(); // Clean up the subscription
+    }, []);
+
 
     useEffect(() => {
-        document.title = "Main Page - Briefly";
-        fetchUserData();
-        const unsubscribe = fetchMessages(); 
-
+        const unsubscribe = onSnapshot(collection(db, "Chats"), (snapshot) => {
+            const sortedMessages = snapshot.docs
+                .map((doc) => ({ id: doc.id, ...doc.data() }))
+                .sort((a, b) => a.timestamp - b.timestamp); // Sort by timestamp
+            setMessages(sortedMessages);
+            scrollToBottom(); // Ensure the view scrolls to the latest message
+        });
+    
         return () => unsubscribe();
     }, []);
 
@@ -97,7 +134,11 @@ function Main() {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
-
+        function scrollToBottom() {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
     return (
         <div className='main-page-div'>
             {userDetails ? (

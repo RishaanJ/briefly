@@ -7,12 +7,14 @@ import Logo from "../assets/BRIEFLY.png";
 import '../componentscss/main.css';
 import ChatMessage from './chatmessage';
 import EmojiPicker from 'emoji-picker-react';
+import GroupChat from './groupchatsidebar';
 
 function Main() {
     const [userDetails, setUserDetails] = useState(null);
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [messageInput, setMessageInput] = useState('');
+    const [groupChat, setGroupChat] = useState('');
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
 
@@ -88,6 +90,16 @@ function Main() {
         return `${hours}:${minutes} ${ampm}`;
     }
 
+    function selectGroupChat(){
+        console.log('ur him')
+        document.querySelectorAll('.chats').forEach(chat => {
+            chat.style.border = 'none';
+          });
+        
+          // Add the border to the clicked chat
+        event.currentTarget.style.border = '2px solid black';
+    }
+
     function generateUID() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0;
@@ -104,12 +116,8 @@ function Main() {
             const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
             return msg.replace(offensivePattern, 'ninja');
         }
-        function replaceEmojis(message) {
-            return message.replace(/:\w+:/g, (match) => emojiMap[match] || match);
-        }
     
-        const sanitizedMessage = sanitizeMessage(message);
-        const finalMessage = replaceEmojis(sanitizedMessage);
+        const finalMessage = sanitizeMessage(message);
     
         console.log("message sent: " + finalMessage);
     
@@ -208,18 +216,9 @@ function Main() {
                     </div>
                     <div className='main-page-content-container'>
                         <div className='sidebar-main-page-content'>
-                            <div className='chats'>
-                                <img src="https://ui-avatars.com/api/?name=SBB&background=313338&color=dcdee1&rounded=false&bold=true&uppercase=true" className='image-for-groupchat' alt="Chat" />
-                                <h2>SBB 💗</h2>
-                            </div>
-                            <div className='chats'>
-                                <img src="https://ui-avatars.com/api/?name=JAZZ&background=313338&color=dcdee1&rounded=false&bold=true&uppercase=true" className='image-for-groupchat' alt="Chat" />
-                                <h2>JAZZ 💗</h2>
-                            </div>
-                            <div className='chats'>
-                                <img src="https://ui-avatars.com/api/?name=RNB&background=313338&color=dcdee1&rounded=false&bold=true&uppercase=true" className='image-for-groupchat' alt="Chat" />
-                                <h2>RNB 💗</h2>
-                            </div>
+                            <GroupChat Title="Jonathon"/>
+                            <GroupChat Title="brawling masters"/>
+                            <GroupChat Title="ninjago"/>
                         </div>
                         <div className='main-page-content'>
                             <div className='chat-messages'>

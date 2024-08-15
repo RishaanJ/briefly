@@ -29,6 +29,7 @@ html, body {
     box-sizing: border-box;
 }
 
+
 .info{
     display: flex;
     flex-direction: row;
@@ -92,6 +93,10 @@ html, body {
     transition-duration: 0.2s;
     background-color: white;
     cursor: pointer;
+}
+
+.selected{
+    border: 2px solid black;
 }
 
 .chats:hover {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { auth, db } from './firebase';
-import { doc, getDoc, setDoc, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, onSnapshot, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logo from "../assets/BRIEFLY.png";
@@ -11,6 +11,45 @@ function Main() {
     const [userDetails, setUserDetails] = useState(null);
     const [messages, setMessages] = useState([]);
     const bottomRef = useRef(null);
+
+    const emojiMap = {
+        ':skull:': '💀',
+        ':smile:': '😊',
+        ':heart:': '❤️',
+        ':fire:': '🔥',
+        ':100:': '💯',
+        ':skull_crossbones:': '☠️',
+        ':clap:': '👏',
+        ':eyes:': '👀',
+        ':cry:': '😢',
+        ':laugh:': '😂',
+        ':thumbsup:': '👍',
+        ':thumbsdown:': '👎',
+        ':sparkles:': '✨',
+        ':wave:': '👋',
+        ':blush:': '😊',
+        ':angry:': '😠',
+        ':sleeping:': '😴',
+        ':sob:': '😭',
+        ':star:': '⭐',
+        ':party:': '🎉',
+        ':ok_hand:': '👌',
+        ':sunglasses:': '😎',
+        ':heart_eyes:': '😍',
+        ':poop:': '💩',
+        ':raised_hands:': '🙌',
+        ':yawning:': '😪',
+        ':pray:': '🙏',
+        ':hype:': '🙌', 
+        ':dancer:': '💃',
+        ':zany:': '🤪',
+        ':scream:': '😱',
+        ':relieved:': '😌',
+        ':grimacing:': '😬',
+        ':sweat:': '😓',
+        ':tada:': '🎊',
+      };
+      
 
     const fetchUserData = async () => {
         auth.onAuthStateChanged(async (user) => {
@@ -80,15 +119,19 @@ function Main() {
             const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
             return msg.replace(offensivePattern, 'ninja');
         }
+        function replaceEmojis(message) {
+            return message.replace(/:\w+:/g, (match) => emojiMap[match] || match);
+        }
     
         const sanitizedMessage = sanitizeMessage(message);
+        const finalMessage = replaceEmojis(sanitizedMessage);
     
-        console.log("message sent: " + sanitizedMessage);
+        console.log("message sent: " + finalMessage);
     
         const now = new Date();
         const timestamp = now.getTime(); 
         if (userDetails && auth.currentUser) {
-            if (message.startsWith("!clear")) {
+            if (message.startsWith("!clear") && auth.currentUser.uid == "KNlXRhe561QKimrgCXn7gOjvJVb2") {
                 const parts = message.split(" ");
                 const numMessages = parseInt(parts[1], 10);
         
@@ -114,7 +157,7 @@ function Main() {
                 toast.success(`${numMessages} messages cleared`, { position: "top-right" });
             }
             await setDoc(doc(db, "Chats", generateUID()), {
-                messageContent: sanitizedMessage,
+                messageContent: finalMessage,
                 date: getCurrentTime(),
                 profilePic: userDetails.pfp,
                 senderUid: auth.currentUser.uid,

@@ -3,12 +3,11 @@ import { auth, db } from './firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Logo from "../assets/BRIEFLY.png";
-import '../componentscss/settings.css'
-import ChatMessage from './chatmessage'; // Import the ChatMessage component
+import '../componentscss/settings.css';
 
 function Settings() {
     const [userDetails, setUserDetails] = useState(null);
+    
 
     const fetchUserData = async () => {
         auth.onAuthStateChanged(async (user) => {
@@ -30,11 +29,8 @@ function Settings() {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 try {
-                    const userDocRef = doc(db, "Users", user.uid); // Get the document reference using the authenticated user's UID
-                    await updateDoc(userDocRef, {
-                        pfp: newPfpUrl, // Update the 'pfp' field with the new URL
-                    });
-    
+                    const userDocRef = doc(db, "Users", user.uid);
+                    await updateDoc(userDocRef, { pfp: newPfpUrl });
                     toast.success("Profile Photo Changed Successfully!", { position: "top-center" });
                 } catch (error) {
                     toast.error(`Error updating profile photo: ${error.message}`, { position: "top-center" });
@@ -42,15 +38,39 @@ function Settings() {
             }
         });
     }
-    
+
+    async function changeUsername(newUsername) {
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const userDocRef = doc(db, "Users", user.uid);
+                    await updateDoc(userDocRef, { username: newUsername });
+                    toast.success("Username changed successfully!", { position: "top-center" });
+                } catch (error) {
+                    toast.error(`Error updating username: ${error.message}`, { position: "top-center" });
+                }
+            }
+        });
+    }
 
     const handleSaveChanges = () => {
         const newPfpUrl = document.getElementById('profile-photo').value;
-        if (newPfpUrl) {
+        const newUsername = document.getElementById('username').value;
+
+        let updateNeeded = false;
+
+        if (newPfpUrl && newPfpUrl !== userDetails.pfp) {
             changePfp(newPfpUrl);
-        } else {
-            console.log("No URL provided"); // Debugging log
-            toast.error("Please enter a URL for the profile photo.", { position: "top-center" });
+            updateNeeded = true;
+        }
+
+        if (newUsername && newUsername !== userDetails.username) {
+            changeUsername(newUsername);
+            updateNeeded = true;
+        }
+
+        if (!updateNeeded) {
+            toast.info("No changes detected", { position: "top-center" });
         }
     };
 

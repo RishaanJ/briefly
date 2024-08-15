@@ -88,6 +88,31 @@ function Main() {
         const now = new Date();
         const timestamp = now.getTime(); 
         if (userDetails && auth.currentUser) {
+            if (message.startsWith("!clear")) {
+                const parts = message.split(" ");
+                const numMessages = parseInt(parts[1], 10);
+        
+                if (isNaN(numMessages) || numMessages <= 0) {
+                    toast.error("Invalid number of messages to clear", { position: "top-right" });
+                    return;
+                }
+        
+                const messagesRef = collection(db, "Chats");
+                const q = query(messagesRef, orderBy("REALtime", "desc"));
+                const snapshot = await getDocs(q);
+        
+                const messages = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => b.REALtime - a.REALtime); 
+        
+                const messagesToDelete = messages.slice(0, numMessages);
+        
+                for (const msg of messagesToDelete) {
+                    await deleteDoc(doc(db, "Chats", msg.id));
+                }
+        
+                toast.success(`${numMessages} messages cleared`, { position: "top-right" });
+            }
             await setDoc(doc(db, "Chats", generateUID()), {
                 messageContent: sanitizedMessage,
                 date: getCurrentTime(),
@@ -121,7 +146,7 @@ function Main() {
         const unsubscribe = onSnapshot(collection(db, "Chats"), (snapshot) => {
             const sortedMessages = snapshot.docs
                 .map((doc) => ({ id: doc.id, ...doc.data() }))
-                .sort((a, b) => a.timestamp - b.timestamp); // Sort by timestamp
+                .sort((a, b) => a.REALtime - b.REALtime); // Sort by timestamp
             setMessages(sortedMessages);
             scrollToBottom(); // Ensure the view scrolls to the latest message
         });

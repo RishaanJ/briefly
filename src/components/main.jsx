@@ -90,14 +90,8 @@ function Main() {
         return `${hours}:${minutes} ${ampm}`;
     }
 
-    function selectGroupChat(){
-        console.log('ur him')
-        document.querySelectorAll('.chats').forEach(chat => {
-            chat.style.border = 'none';
-          });
-        
-          // Add the border to the clicked chat
-        event.currentTarget.style.border = '2px solid black';
+    function selectGroupChat(chatTitle) {
+        setGroupChat(chatTitle);
     }
 
     function generateUID() {
@@ -216,9 +210,14 @@ function Main() {
                     </div>
                     <div className='main-page-content-container'>
                         <div className='sidebar-main-page-content'>
-                            <GroupChat Title="Jonathon"/>
-                            <GroupChat Title="brawling masters"/>
-                            <GroupChat Title="ninjago"/>
+                            {['Group 221', 'Group 30', 'Group 333'].map(group => (
+                                    <GroupChat
+                                        key={group}
+                                        Title={group}
+                                        onClick={() => selectGroupChat(group)}
+                                        selected={groupChat === group}
+                                    />
+                            ))}
                         </div>
                         <div className='main-page-content'>
                             <div className='chat-messages'>

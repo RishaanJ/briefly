@@ -8,8 +8,10 @@ import '../componentscss/main.css';
 import ChatMessage from './chatmessage';
 import EmojiPicker from 'emoji-picker-react';
 import GroupChat from './groupchatsidebar';
-
+import Filter from 'bad-words';
 function Main() {
+    const filter = new Filter();
+
     const [userDetails, setUserDetails] = useState(null);
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -57,7 +59,7 @@ function Main() {
         if (!groupChat) return; // Skip fetching if no group chat is selected
     
         const messagesRef = collection(db, groupChat);
-        const q = query(messagesRef, orderBy("date")); // Order messages by time
+        const q = query(messagesRef, orderBy("REALtime")); // Order messages by time
     
         // Set up the real-time listener
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -126,7 +128,8 @@ function Main() {
             return msg.replace(offensivePattern, 'ninja');
         }
     
-        const finalMessage = sanitizeMessage(message);
+        const finalMessage = filter.clean(message);
+        console.log(filter.clean(message))
     
         const now = new Date();
         const timestamp = now.getTime(); 

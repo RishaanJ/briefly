@@ -105,6 +105,7 @@ function Main() {
 
     function selectGroupChat(chatTitle) {
         setGroupChat(chatTitle);
+        console.log(groupChat)
     }
 
     function generateUID() {
@@ -119,6 +120,7 @@ function Main() {
         return str.replace(regex, replacementWord);
     }
     async function sendMessage(message) {
+        console.log(groupChat)
         function sanitizeMessage(msg) {
             const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
             return msg.replace(offensivePattern, 'ninja');
@@ -126,45 +128,45 @@ function Main() {
     
         const finalMessage = sanitizeMessage(message);
     
-        console.log("message sent: " + finalMessage);
-    
         const now = new Date();
         const timestamp = now.getTime(); 
         if (userDetails && auth.currentUser) {
-            if (message.startsWith("!clear") && auth.currentUser.uid == "KNlXRhe561QKimrgCXn7gOjvJVb2") {
-                const parts = message.split(" ");
-                const numMessages = parseInt(parts[1], 10);
-        
-                if (isNaN(numMessages) || numMessages <= 0) {
-                    toast.error("Invalid number of messages to clear", { position: "top-right" });
-                    return;
-                }
-        
-                const messagesRef = collection(db, "Chats");
-                const q = query(messagesRef, orderBy("REALtime", "desc"));
-                const snapshot = await getDocs(q);
-        
-                const messages = snapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.REALtime - a.REALtime); 
-        
-                const messagesToDelete = messages.slice(0, numMessages);
-        
-                for (const msg of messagesToDelete) {
-                    await deleteDoc(doc(db, "Chats", msg.id));
-                }
-        
-                toast.success(`${numMessages} messages cleared`, { position: "top-right" });
+            if (message.startsWith("!clear") && auth.currentUser.uid === "KNlXRhe561QKimrgCXn7gOjvJVb2") {
+                    const parts = message.split(" ");
+                    const numMessages = parseInt(parts[1], 10);
+            
+                    if (isNaN(numMessages) || numMessages <= 0) {
+                        toast.error("Invalid number of messages to clear", { position: "top-right" });
+                        return;
+                    }
+            
+                    const messagesRef = collection(db, groupChat);
+                    const q = query(messagesRef, orderBy("REALtime", "desc"));
+                    const snapshot = await getDocs(q);
+            
+                    const messages = snapshot.docs
+                        .map(doc => ({ id: doc.id, ...doc.data() }))
+                        .sort((a, b) => b.REALtime - a.REALtime); 
+            
+                    const messagesToDelete = messages.slice(0, numMessages);
+            
+                    for (const msg of messagesToDelete) {
+                        await deleteDoc(doc(db, groupChat, msg.id));
+                    }
+            
+                    toast.success(`${numMessages} messages cleared`, { position: "top-right" });
+            } else {
+                await setDoc(doc(db, groupChat, generateUID()), {
+                    messageContent: finalMessage,
+                    date: getCurrentTime(),
+                    profilePic: userDetails.pfp,
+                    senderUid: auth.currentUser.uid,
+                    REALtime: timestamp
+                });
             }
-            await setDoc(doc(db, "Chats", generateUID()), {
-                messageContent: finalMessage,
-                date: getCurrentTime(),
-                profilePic: userDetails.pfp,
-                senderUid: auth.currentUser.uid,
-                REALtime: timestamp
-            });
         }
     }
+    
     
     useEffect(() => {
         const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {

@@ -16,7 +16,7 @@ function Main() {
     const [messages, setMessages] = useState([]);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [messageInput, setMessageInput] = useState('');
-    const [groupChat, setGroupChat] = useState('');
+    const [groupChat, setGroupChat] = useState('Chat 1');
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
 
@@ -57,7 +57,7 @@ function Main() {
 
     const fetchMessages = () => {
         if (!groupChat) return; // Skip fetching if no group chat is selected
-    
+        console.log(groupChat)
         const messagesRef = collection(db, groupChat);
         const q = query(messagesRef, orderBy("REALtime")); // Order messages by time
     
@@ -73,13 +73,14 @@ function Main() {
         return unsubscribe; // Return the unsubscribe function to stop listening when the component unmounts
     };
     useEffect(() => {
+        console.log(`Loading ${groupChat}`)
         const unsubscribe = fetchMessages();
         return () => {
             if (unsubscribe) {
                 unsubscribe();
             }
         };
-    }, [groupChat]); // Depend on `groupChat` to refetch messages when it changes
+    }, [groupChat]);
     
     
 
@@ -191,7 +192,7 @@ function Main() {
 
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "Chats"), (snapshot) => {
+        const unsubscribe = onSnapshot(collection(db, groupChat), (snapshot) => {
             const sortedMessages = snapshot.docs
                 .map((doc) => ({ id: doc.id, ...doc.data() }))
                 .sort((a, b) => a.REALtime - b.REALtime); // Sort by timestamp

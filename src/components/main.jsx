@@ -52,10 +52,13 @@ function Main() {
         });
     };
 
-    const fetchMessages = () => {
-        const messagesRef = collection(db, "Chats");
-        const q = query(messagesRef, orderBy("date")); // Order messages by time
 
+    const fetchMessages = () => {
+        if (!groupChat) return; // Skip fetching if no group chat is selected
+    
+        const messagesRef = collection(db, groupChat);
+        const q = query(messagesRef, orderBy("date")); // Order messages by time
+    
         // Set up the real-time listener
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const updatedMessages = snapshot.docs.map(doc => ({
@@ -64,9 +67,19 @@ function Main() {
             }));
             setMessages(updatedMessages);
         });
-
+    
         return unsubscribe; // Return the unsubscribe function to stop listening when the component unmounts
     };
+    useEffect(() => {
+        const unsubscribe = fetchMessages();
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    }, [groupChat]); // Depend on `groupChat` to refetch messages when it changes
+    
+    
 
     async function handleLogout() {
         try {
@@ -210,7 +223,7 @@ function Main() {
                     </div>
                     <div className='main-page-content-container'>
                         <div className='sidebar-main-page-content'>
-                            {['Group 221', 'Group 30', 'Group 333'].map(group => (
+                            {['Chat 1', 'Chats'].map(group => (
                                     <GroupChat
                                         key={group}
                                         Title={group}

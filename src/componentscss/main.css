@@ -368,3 +368,40 @@ html, body {
     background-color: black; 
     color: green; 
 }
+
+/* Water Theme */
+
+.water-theme {
+    background-color: #9fd4fe;
+    color: white;
+}
+
+.water-theme .main-page-content {
+    background-color: #59adf0; 
+}
+
+.water-theme .send-smt {
+    background-color: #59adf0; 
+}
+
+.water-theme .emojiPickerButton {
+    fill: white; 
+}
+
+.water-theme .send-smt .buttton {
+    background-color: #0077b6; 
+}
+
+.water-theme .message.sent {
+    background-color: #0077b6; 
+    color: white;
+}
+
+.water-theme .chats {
+    background-color: #43628b; 
+    color: white; 
+}
+
+.water-theme .chats.selected{
+    border: 2px solid blue;
+}

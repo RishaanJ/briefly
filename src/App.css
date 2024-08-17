@@ -1,10 +1,13 @@
-*{
-
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding-top: 600px;
   text-align: center;
 }
 
@@ -13,57 +16,126 @@ html {
   display: grid;
   place-items: center;
 }
+.top {
+  position: static; /* or relative, depending on your layout */
+  width: 100%;
+  background-color: white; /* Optional: ensures readability */
+  z-index: 1000; /* Optional: keeps it above other content if needed */
+  margin-bottom: 2rem; /* Ensures space below the .top div */
+}
 
-.box {
+.brieflybiglogo {
+  width: 900px;
   margin: auto;
-  width: 250px;
+}
+
+.tagline {
+  text-align: center;
+  margin-bottom: 2rem; /* Adjust spacing */
+}
+
+
+.UI {
+  margin-top: 500px;
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  width: 110%;
+  margin-bottom: 2rem; /* Add margin to separate from other content */
+}
+
+.ui-info {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}
+.ui-info h1{
+  font-size: 35px;
+}
+
+.ui-info p {
+  font-size: 25px;
+}
+
+.UI img {
+  width: 850px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 25px;
+}
+
+.button-19 {
+  appearance: button;
+  background-color: #1899D6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: din-round, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  overflow: visible;
+  padding: 13px 16px;
+  text-align: center;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  transform: translateZ(0);
+  transition: filter .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 350px;
   height: 100px;
-  display: grid;
-  place-content: center;
-  color: white;
-  text-shadow: 0 1px 0 #000;
-
-  --border-angle: 0turn;
-  --main-bg: conic-gradient(
-    from var(--border-angle),
-    #213,
-    #112 5%,
-    #6c576c 60%,
-    #213 95%
-  );
-
-  border: solid 5px transparent;
-  border-radius: 2em;
-  --gradient-border: conic-gradient(
-    from var(--border-angle),
-    transparent 25%,
-    #a0c4ff,
-    #bdb2ff 99%,
-    transparent
-  );
-
-  background: 
-    var(--main-bg) padding-box,
-    var(--gradient-border) border-box,
-    var(--main-bg) border-box;
-
-  background-position: center center;
-
-  animation: bg-spin 3s linear infinite;
 }
 
-@keyframes bg-spin {
-  to {
-    --border-angle: 1turn;
-  }
+.button-19:after {
+  background-clip: padding-box;
+  background-color: #1CB0F6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  bottom: -4px;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
 }
 
-.box:hover {
-  animation-play-state: paused;
+.button-19:main,
+.button-19:focus {
+  user-select: auto;
 }
 
-@property --border-angle {
-  syntax: "<angle>";
-  inherits: true;
-  initial-value: 0turn;
+.button-19:hover:not(:disabled) {
+  filter: brightness(1.1);
+  -webkit-filter: brightness(1.1);
+}
+
+.button-19:disabled {
+  cursor: auto;
+}
+
+.button-19:active {
+  border-width: 4px 0 0;
+  background: none;
+}
+
+.Themes {
+  margin-top: 2rem; /* Adjust spacing */
+}
+
+.Themes .UI {
+  margin-top: 1rem; /* Adjust spacing between theme blocks */
 }

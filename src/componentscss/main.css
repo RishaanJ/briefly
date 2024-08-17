@@ -298,3 +298,36 @@ html, body {
     text-align: left;
     display: block;
 }
+
+/* Themes */
+
+/* Forest */
+body {
+    background-color: #8e9d8e; 
+}
+
+.main-page-div {
+    background-color: #768776; 
+}
+
+.send-smt {
+    background-color: #768776; 
+}
+
+.emojiPickerButton {
+    fill: white; 
+}
+
+.buttton {
+    background-color: #244669; 
+}
+
+.sent {
+    background-color: #244669; 
+}
+
+.chats {
+    background-color: #5f835f; 
+    color: white; 
+}
+

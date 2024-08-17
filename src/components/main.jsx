@@ -213,6 +213,10 @@ function Main() {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }
+
+    function switchTheme(theme){
+        console.log('theme picked')
+    }
     return (
         <div className='main-page-div'>
             {userDetails ? (
@@ -224,9 +228,9 @@ function Main() {
                                 <h1>Hey, {userDetails.username}</h1>
                                 <button className="button" onClick={handleLogout}>Logout</button>
                                 <div className='themes-button-container'>
-                                    <button className="themes-button">🌊</button>
-                                    <button className="themes-button">💻</button>
-                                    <button className="themes-button">🌳</button>
+                                    <button onClick={() => switchTheme("water")} className="themes-button">🌊</button>
+                                    <button onClick={() => switchTheme("cyber")} className="themes-button">💻</button>
+                                    <button onClick={() => switchTheme("tree")} className="themes-button">🌳</button>
                                 </div>
                             </div>
                             <img onClick={() => window.location.href = "/settings"} src={userDetails.pfp} alt="Profile Pic" />

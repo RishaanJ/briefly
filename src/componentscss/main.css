@@ -1,4 +1,5 @@
-/* General Reset and Base Styles */
+@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -303,7 +304,7 @@ html, body {
 
 /* Forest Theme Styles */
 .forest-theme {
-    background-color: #8e9d8e; 
+    background-color: #8e9d8e;
 }
 
 .forest-theme .main-page-content {
@@ -329,4 +330,41 @@ html, body {
 .forest-theme .chats {
     background-color: #5f835f; 
     color: white; 
+}
+
+/* Cyber theme */
+
+
+.cyber-theme {
+    background-color: rgb(32, 32, 32);
+    font-family: "Anonymous Pro", monospace;
+    font-weight: 400;
+    font-style: normal;
+    color: green;
+}
+
+.cyber-theme .main-page-content {
+    background-color: black; 
+}
+
+.cyber-theme .send-smt {
+    background-color: black; 
+}
+
+.cyber-theme .emojiPickerButton {
+    fill: green; 
+}
+
+.cyber-theme .send-smt .buttton {
+    background-color: green; 
+}
+
+.cyber-theme .message.sent {
+    background-color: green; 
+    color: black;
+}
+
+.cyber-theme .chats {
+    background-color: black; 
+    color: green; 
 }

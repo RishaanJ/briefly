@@ -233,7 +233,7 @@ function Main() {
                                 <div className='themes-button-container'>
                                     <button onClick={() => setTheme("")} className="themes-button">⚙️</button>
                                     <button onClick={() => switchTheme("water")} className="themes-button">🌊</button>
-                                    <button onClick={() => switchTheme("cyber")} className="themes-button">💻</button>
+                                    <button onClick={() => setTheme("cyber")} className="themes-button">💻</button>
                                     <button onClick={() => setTheme("forest")} className="themes-button">🌳</button>
                                 </div>
                             </div>

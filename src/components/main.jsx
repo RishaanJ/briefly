@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { auth, db } from './firebase';
-import { doc, getDoc, setDoc, collection, onSnapshot, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, setDoc, collection, onSnapshot, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logo from "../assets/BRIEFLY.png";
@@ -19,6 +19,19 @@ function Main() {
     const [groupChat, setGroupChat] = useState('Chat 1');
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
+    const [chatGroups, setChatGroups] = useState([]);
+
+    const fetchChatGroups = async () => {
+        const chatsRef = collection(db, "Chats");
+        const snapshot = await getDocs(chatsRef);
+        const groupList = snapshot.docs.map(doc => doc.id);
+        setChatGroups(groupList);
+    };
+    
+    // Call fetchChatGroups when the component mounts
+    useEffect(() => {
+        fetchChatGroups();
+    }, []);
     function setTheme(newTheme) {
         document.body.className = `${newTheme}-theme`;
     }
@@ -60,21 +73,24 @@ function Main() {
 
     const fetchMessages = () => {
         if (!groupChat) return; // Skip fetching if no group chat is selected
-        console.log(groupChat)
-        const messagesRef = collection(db, groupChat);
-        const q = query(messagesRef, orderBy("REALtime")); // Order messages by time
     
-        // Set up the real-time listener
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const updatedMessages = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            setMessages(updatedMessages);
+        console.log(groupChat);
+        const groupChatRef = doc(db, "Chats", groupChat);
+    
+        // Set up a real-time listener for the group chat document
+        const unsubscribe = onSnapshot(groupChatRef, (docSnapshot) => {
+            const data = docSnapshot.data();
+            if (data && data.messages) {
+                // Convert the messages map to an array and sort by REALtime
+                const messagesArray = Object.values(data.messages).sort((a, b) => a.REALtime - b.REALtime);
+                setMessages(messagesArray);
+            } else {
+                setMessages([]); // Clear messages if no data is present
+            }
         });
     
         return unsubscribe; // Return the unsubscribe function to stop listening when the component unmounts
-    };
+    };    
     useEffect(() => {
         console.log(`Loading ${groupChat}`)
         const unsubscribe = fetchMessages();
@@ -126,50 +142,63 @@ function Main() {
         return str.replace(regex, replacementWord);
     }
     async function sendMessage(message) {
-        console.log(groupChat)
+        console.log(groupChat);
+        
         function sanitizeMessage(msg) {
             const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
             return msg.replace(offensivePattern, 'ninja');
         }
     
         const finalMessage = filter.clean(message);
-        console.log(filter.clean(message))
+        console.log(filter.clean(message));
     
         const now = new Date();
-        const timestamp = now.getTime(); 
+        const timestamp = now.getTime();
         if (userDetails && auth.currentUser) {
             if (message.startsWith("!clear") && auth.currentUser.uid === "KNlXRhe561QKimrgCXn7gOjvJVb2") {
-                    const parts = message.split(" ");
-                    const numMessages = parseInt(parts[1], 10);
-            
-                    if (isNaN(numMessages) || numMessages <= 0) {
-                        toast.error("Invalid number of messages to clear", { position: "top-right" });
-                        return;
-                    }
-            
-                    const messagesRef = collection(db, groupChat);
-                    const q = query(messagesRef, orderBy("REALtime", "desc"));
-                    const snapshot = await getDocs(q);
-            
-                    const messages = snapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }))
-                        .sort((a, b) => b.REALtime - a.REALtime); 
-            
-                    const messagesToDelete = messages.slice(0, numMessages);
-            
-                    for (const msg of messagesToDelete) {
-                        await deleteDoc(doc(db, groupChat, msg.id));
-                    }
-            
-                    toast.success(`${numMessages} messages cleared`, { position: "top-right" });
+                const parts = message.split(" ");
+                const numMessages = parseInt(parts[1], 10);
+    
+                if (isNaN(numMessages) || numMessages <= 0) {
+                    toast.error("Invalid number of messages to clear", { position: "top-right" });
+                    return;
+                }
+    
+                const messagesRef = collection(db, "Chats", groupChat, "messages");
+                const q = query(messagesRef, orderBy("REALtime", "desc"));
+                const snapshot = await getDocs(q);
+    
+                const messages = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => b.REALtime - a.REALtime); 
+    
+                const messagesToDelete = messages.slice(0, numMessages);
+    
+                for (const msg of messagesToDelete) {
+                    await deleteDoc(doc(db, "Chats", groupChat, "messages", msg.id));
+                }
+    
+                toast.success(`${numMessages} messages cleared`, { position: "top-right" });
             } else {
-                await setDoc(doc(db, groupChat, generateUID()), {
+                // Create a new message object
+                const newMessage = {
+                    id: generateUID(),
                     messageContent: finalMessage,
                     date: getCurrentTime(),
                     profilePic: userDetails.pfp,
                     senderUid: auth.currentUser.uid,
                     REALtime: timestamp
+                };
+    
+                // Reference to the group chat document
+                const groupChatRef = doc(db, "Chats", groupChat);
+    
+                // Update the `messages` map field inside the `groupChat` document
+                await updateDoc(groupChatRef, {
+                    [`messages.${newMessage.id}`]: newMessage
                 });
+    
+                // Optionally, scroll to bottom or any other actions
             }
         }
     }
@@ -195,7 +224,7 @@ function Main() {
 
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, groupChat), (snapshot) => {
+        const unsubscribe = onSnapshot(collection(db, "Chats", groupChat, "messages"), (snapshot) => {
             const sortedMessages = snapshot.docs
                 .map((doc) => ({ id: doc.id, ...doc.data() }))
                 .sort((a, b) => a.REALtime - b.REALtime); // Sort by timestamp
@@ -242,7 +271,7 @@ function Main() {
                     </div>
                     <div className='main-page-content-container'>
                         <div className='sidebar-main-page-content'>
-                            {['Chat 1', 'Chats'].map(group => (
+                            {['Chat 1'].map(group => (
                                     <GroupChat
                                         key={group}
                                         Title={group}

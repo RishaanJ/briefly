@@ -59,6 +59,27 @@ html, body {
     text-align: right;
     margin-right: 15px;
 }
+.themes-button-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+
+.themes-button{
+    width: 70px;
+    height: 70px;
+    font-size: 40px;
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition-duration: .5s;
+    margin-left: 15px;
+}
+.themes-button:hover{
+    transform: scale(1.1);
+}
 
 /* Main Page Content Styles */
 .main-page-content-container {
@@ -196,6 +217,9 @@ html, body {
     border-radius: 8px;
 }
 
+#image_upload{
+    display: none;
+}
 
 /* Chat Messages Container */
 .chat-messages {

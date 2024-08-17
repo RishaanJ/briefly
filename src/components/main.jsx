@@ -19,6 +19,9 @@ function Main() {
     const [groupChat, setGroupChat] = useState('Chat 1');
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
+    function setTheme(newTheme) {
+        document.body.className = `${newTheme}-theme`;
+    }
 
     const toggleEmojiPicker = () => {
         setShowEmojiPicker(!showEmojiPicker);
@@ -228,9 +231,10 @@ function Main() {
                                 <h1>Hey, {userDetails.username}</h1>
                                 <button className="button" onClick={handleLogout}>Logout</button>
                                 <div className='themes-button-container'>
+                                    <button onClick={() => setTheme("")} className="themes-button">⚙️</button>
                                     <button onClick={() => switchTheme("water")} className="themes-button">🌊</button>
                                     <button onClick={() => switchTheme("cyber")} className="themes-button">💻</button>
-                                    <button onClick={() => switchTheme("tree")} className="themes-button">🌳</button>
+                                    <button onClick={() => setTheme("forest")} className="themes-button">🌳</button>
                                 </div>
                             </div>
                             <img onClick={() => window.location.href = "/settings"} src={userDetails.pfp} alt="Profile Pic" />

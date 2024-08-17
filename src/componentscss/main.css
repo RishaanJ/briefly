@@ -301,33 +301,32 @@ html, body {
 
 /* Themes */
 
-/* Forest */
-body {
+/* Forest Theme Styles */
+.forest-theme {
     background-color: #8e9d8e; 
 }
 
-.main-page-div {
+.forest-theme .main-page-content {
     background-color: #768776; 
 }
 
-.send-smt {
+.forest-theme .send-smt {
     background-color: #768776; 
 }
 
-.emojiPickerButton {
+.forest-theme .emojiPickerButton {
     fill: white; 
 }
 
-.buttton {
+.forest-theme .send-smt .buttton {
     background-color: #244669; 
 }
 
-.sent {
+.forest-theme .message.sent {
     background-color: #244669; 
 }
 
-.chats {
+.forest-theme .chats {
     background-color: #5f835f; 
     color: white; 
 }
-

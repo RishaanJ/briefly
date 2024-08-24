@@ -9,6 +9,8 @@ import ChatMessage from './chatmessage';
 import EmojiPicker from 'emoji-picker-react';
 import GroupChat from './groupchatsidebar';
 import Filter from 'bad-words';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 function Main() {
     const filter = new Filter();
 
@@ -20,8 +22,9 @@ function Main() {
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
     const [chatGroups, setChatGroups] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null); // State for the selected image
-    const [dragging, setDragging] = useState(false); // State for handling drag-and-drop visuals
+    const [selectedImage, setSelectedImage] = useState(null); 
+    const [dragging, setDragging] = useState(false); 
+    const inputRef = useRef(null); 
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -33,14 +36,43 @@ function Main() {
         setDragging(false);
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) {
-            setSelectedImage(file); // Set the selected image
+            setSelectedImage(file); 
         }
     };
+
+    if (inputRef.current) {
+        inputRef.current.focus();
+    }
     
-    const handleDragLeave = () => {
+    const handleDragLeave = (e) => {
         setDragging(false);
-    };
+    }
     
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log("Form submitted");
+        const message = messageInput.trim();
+    
+        if (selectedImage) {
+            try {
+                console.log("Uploading image...");
+                const imageUrl = await uploadImage(selectedImage);
+                console.log("Image uploaded. URL:", imageUrl);
+                await sendMessage(message, imageUrl);
+            } catch (error) {
+                console.error("Error sending image:", error);
+            } finally {
+                setSelectedImage(null);
+                setMessageInput('');
+            }
+        } else {
+            if (message) {
+                console.log("Sending text message:", message);
+                await sendMessage(message);
+                setMessageInput('');
+            }
+        }
+    };
 
     const fetchChatGroups = async () => {
         const chatsRef = collection(db, "Chats");
@@ -49,7 +81,7 @@ function Main() {
         setChatGroups(groupList);
     };
     
-    // Call fetchChatGroups when the component mounts
+
     useEffect(() => {
         fetchChatGroups();
     }, []);
@@ -97,24 +129,23 @@ function Main() {
 
 
     const fetchMessages = () => {
-        if (!groupChat) return; // Skip fetching if no group chat is selected
+        if (!groupChat) return; 
     
         console.log(groupChat);
         const groupChatRef = doc(db, "Chats", groupChat);
     
-        // Set up a real-time listener for the group chat document
+    
         const unsubscribe = onSnapshot(groupChatRef, (docSnapshot) => {
             const data = docSnapshot.data();
             if (data && data.messages) {
-                // Convert the messages map to an array and sort by REALtime
                 const messagesArray = Object.values(data.messages).sort((a, b) => a.REALtime - b.REALtime);
                 setMessages(messagesArray);
             } else {
-                setMessages([]); // Clear messages if no data is present
+                setMessages([]); 
             }
         });
     
-        return unsubscribe; // Return the unsubscribe function to stop listening when the component unmounts
+        return unsubscribe; 
     };    
     useEffect(() => {
         console.log(`Loading ${groupChat}`)
@@ -166,67 +197,79 @@ function Main() {
         const regex = new RegExp(`\\b${targetWord}(?:a|er)?\\b`, 'gi');
         return str.replace(regex, replacementWord);
     }
-    async function sendMessage(message) {
-        console.log(groupChat);
-        
-        function sanitizeMessage(msg) {
-            const offensivePattern = /\b(n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*a|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*r|n[\s'_\-]*i[\s'_\-]*g[\s'_\-]*g[\s'_\-]*e[\s'_\-]*r)\b/gi;
-            return msg.replace(offensivePattern, 'ninja');
+    const uploadImage = async (file) => {
+        const storage = getStorage();
+        const imageRef = ref(storage, `images/${file.name}`);
+        try {
+            await uploadBytes(imageRef, file);
+            const url = await getDownloadURL(imageRef);
+            return url;
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+            throw error;
         }
+    };
     
-        const finalMessage = filter.clean(message);
-        console.log(filter.clean(message));
-    
-        const now = new Date();
-        const timestamp = now.getTime();
-        if (userDetails && auth.currentUser) {
-            if (message.startsWith("!clear") && auth.currentUser.uid === "KNlXRhe561QKimrgCXn7gOjvJVb2") {
-                const parts = message.split(" ");
-                const numMessages = parseInt(parts[1], 10);
-    
-                if (isNaN(numMessages) || numMessages <= 0) {
-                    toast.error("Invalid number of messages to clear", { position: "top-right" });
-                    return;
+    async function sendMessage(message, imageUrl = null) {
+        try {
+            console.log("Sending message:", message, "Image URL:", imageUrl);
+            const sanitizedMessage = filter.clean(message);
+            const now = new Date();
+            const timestamp = now.getTime();
+
+            if (userDetails && auth.currentUser) {
+                if (message.startsWith("!clear") && auth.currentUser.uid === "KNlXRhe561QKimrgCXn7gOjvJVb2") {
+                    const parts = message.split(" ");
+                    const numMessages = parseInt(parts[1], 10);
+
+                    if (isNaN(numMessages) || numMessages <= 0) {
+                        toast.error("Invalid number of messages to clear", { position: "top-right" });
+                        return;
+                    }
+
+                    const messagesRef = collection(db, "Chats", groupChat, "messages");
+                    const q = query(messagesRef, orderBy("REALtime", "desc"));
+                    const snapshot = await getDocs(q);
+
+                    const messages = snapshot.docs
+                        .map(doc => ({ id: doc.id, ...doc.data() }))
+                        .sort((a, b) => b.REALtime - a.REALtime);
+
+                    const messagesToDelete = messages.slice(0, numMessages);
+
+                    for (const msg of messagesToDelete) {
+                        await deleteDoc(doc(db, "Chats", groupChat, "messages", msg.id));
+                    }
+
+                    toast.success(`${numMessages} messages cleared`, { position: "top-right" });
+                } else {
+                    // Create a new message object
+                    const newMessage = {
+                        id: generateUID(),
+                        messageContent: sanitizedMessage,
+                        imageUrl: imageUrl || null, // Set imageUrl if provided
+                        date: getCurrentTime(),
+                        profilePic: userDetails.pfp,
+                        senderUid: auth.currentUser.uid,
+                        REALtime: timestamp
+                    };
+
+                    // Reference to the group chat document
+                    const groupChatRef = doc(db, "Chats", groupChat);
+
+                    // Update the `messages` map field inside the `groupChat` document
+                    await updateDoc(groupChatRef, {
+                        [`messages.${newMessage.id}`]: newMessage
+                    });
+
+                    console.log("Message sent successfully");
                 }
-    
-                const messagesRef = collection(db, "Chats", groupChat, "messages");
-                const q = query(messagesRef, orderBy("REALtime", "desc"));
-                const snapshot = await getDocs(q);
-    
-                const messages = snapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.REALtime - a.REALtime); 
-    
-                const messagesToDelete = messages.slice(0, numMessages);
-    
-                for (const msg of messagesToDelete) {
-                    await deleteDoc(doc(db, "Chats", groupChat, "messages", msg.id));
-                }
-    
-                toast.success(`${numMessages} messages cleared`, { position: "top-right" });
-            } else {
-                // Create a new message object
-                const newMessage = {
-                    id: generateUID(),
-                    messageContent: finalMessage,
-                    date: getCurrentTime(),
-                    profilePic: userDetails.pfp,
-                    senderUid: auth.currentUser.uid,
-                    REALtime: timestamp
-                };
-    
-                // Reference to the group chat document
-                const groupChatRef = doc(db, "Chats", groupChat);
-    
-                // Update the `messages` map field inside the `groupChat` document
-                await updateDoc(groupChatRef, {
-                    [`messages.${newMessage.id}`]: newMessage
-                });
-    
-                // Optionally, scroll to bottom or any other actions
             }
+        } catch (error) {
+            console.error("Error sending message:", error);
         }
     }
+
     
     
     useEffect(() => {
@@ -320,21 +363,11 @@ function Main() {
                                 ))}
                                 <div ref={bottomRef} />
                             </div>
-                            <form className={`send-smt ${dragging ? 'dragging' : ''}`} onDragOver={handleDragOver} onDrop={handleDrop} onDragLeave={handleDragLeave} onSubmit={(e) => {
-                                e.preventDefault();
-                                const message = messageInput.trim(); 
-                                if (message) {
-                                    sendMessage(message); 
-                                    setMessageInput(''); 
-                                }
-
-                            }}>
+                            <form className={`send-smt ${dragging ? 'dragging' : ''}`} onDragOver={handleDragOver} onDrop={handleDrop} onDragLeave={handleDragLeave} onSubmit={handleSubmit}>
                                 <div className='emoji-picker-container' ref={emojiButtonRef}>
                                     <svg onClick={toggleEmojiPicker} className="emojiPickerButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm177.6 62.1C192.8 334.5 218.8 352 256 352s63.2-17.5 78.4-33.9c9-9.7 24.2-10.4 33.9-1.4s10.4 24.2 1.4 33.9c-22 23.8-60 49.4-113.6 49.4s-91.7-25.5-113.6-49.4c-9-9.7-8.4-24.9 1.4-33.9s24.9-8.4 33.9 1.4zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
                                     </svg>
-                                    
-                                    
                                     {showEmojiPicker && (
                                         <div className='emoji-picker'>
                                             <EmojiPicker onEmojiClick={handleEmojiClick} />
@@ -342,20 +375,20 @@ function Main() {
                                     )}
                                 </div>
                                 <div className='input-area'>
-                                    {selectedImage ? (
+                                {selectedImage && (
                                         <div className="image-preview">
                                             <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
                                         </div>
-                                    ) : (
-                                        <input
-                                            type='text'
-                                            value={messageInput}
-                                            onChange={(e) => setMessageInput(e.target.value)}
-                                            placeholder='Type a message or drag an image here...'
-                                        />
                                     )}
+                                    <input
+                                        type='text'
+                                        value={messageInput}
+                                        ref={inputRef}
+                                        onChange={(e) => setMessageInput(e.target.value)}
+                                        placeholder='Type a message or drag an image here...'
+                                        className='text-input-send-smt'
+                                    />
                                 </div>
-
                                 <button className='buttton'>
                                     <svg className='svg-button-send' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />

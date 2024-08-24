@@ -165,6 +165,34 @@ html, body {
 .send-smt input:focus {
     outline: none;
 }
+.input-area {
+    padding: 10px;
+    position: relative;
+    transition: border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px; /* Ensure it matches your input box height */
+    width: 80%;
+}
+
+.input-area.dragging {
+    border-color: #007bff;
+    background-color: #f1f1f1;
+}
+
+.image-preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px; /* To fit with your overall rounded theme */
+}
+
+.dragging {
+    border: 2px dashed #00bfff;
+}
+
 
 .send-smt .buttton {
     width: 85px;
@@ -405,3 +433,5 @@ html, body {
 .water-theme .chats.selected{
     border: 2px solid blue;
 }
+
+

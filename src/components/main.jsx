@@ -20,6 +20,27 @@ function Main() {
     const emojiButtonRef = useRef(null)
     const bottomRef = useRef(null);
     const [chatGroups, setChatGroups] = useState([]);
+    const [selectedImage, setSelectedImage] = useState(null); // State for the selected image
+    const [dragging, setDragging] = useState(false); // State for handling drag-and-drop visuals
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setDragging(true);
+    };
+    
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            setSelectedImage(file); // Set the selected image
+        }
+    };
+    
+    const handleDragLeave = () => {
+        setDragging(false);
+    };
+    
 
     const fetchChatGroups = async () => {
         const chatsRef = collection(db, "Chats");
@@ -43,7 +64,11 @@ function Main() {
     function handleEmojiClick(emojiObject) {
         setMessageInput((prevInput) => prevInput + emojiObject.emoji); 
     }
-
+    function createGroupChat(){
+        let name = alert("GroupChat Name")
+        if(name == "Chats"){return true}
+        
+    }
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (emojiButtonRef.current && !emojiButtonRef.current.contains(event.target)) {
@@ -271,15 +296,17 @@ function Main() {
                     </div>
                     <div className='main-page-content-container'>
                         <div className='sidebar-main-page-content'>
-                            {['Chat 1'].map(group => (
-                                    <GroupChat
-                                        key={group}
-                                        Title={group}
-                                        onClick={() => selectGroupChat(group)}
-                                        selected={groupChat === group}
-                                    />
+                            <button onClick={() => console.log('create a groupchat')} className='button'>Make a Chatter</button>
+                            {chatGroups.map(group => (
+                                <GroupChat
+                                    key={group}
+                                    Title={group}
+                                    onClick={() => selectGroupChat(group)}
+                                    selected={groupChat === group}
+                                />
                             ))}
                         </div>
+
                         <div className='main-page-content'>
                             <div className='chat-messages'>
                                 {messages.map((msg) => (
@@ -293,13 +320,14 @@ function Main() {
                                 ))}
                                 <div ref={bottomRef} />
                             </div>
-                            <form className='send-smt' onSubmit={(e) => {
+                            <form className={`send-smt ${dragging ? 'dragging' : ''}`} onDragOver={handleDragOver} onDrop={handleDrop} onDragLeave={handleDragLeave} onSubmit={(e) => {
                                 e.preventDefault();
                                 const message = messageInput.trim(); 
                                 if (message) {
                                     sendMessage(message); 
                                     setMessageInput(''); 
                                 }
+
                             }}>
                                 <div className='emoji-picker-container' ref={emojiButtonRef}>
                                     <svg onClick={toggleEmojiPicker} className="emojiPickerButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -313,7 +341,21 @@ function Main() {
                                         </div>
                                     )}
                                 </div>
-                                <input type='text' value={messageInput} onChange={(e) => setMessageInput(e.target.value)} placeholder='Type a message...' />
+                                <div className='input-area'>
+                                    {selectedImage ? (
+                                        <div className="image-preview">
+                                            <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
+                                        </div>
+                                    ) : (
+                                        <input
+                                            type='text'
+                                            value={messageInput}
+                                            onChange={(e) => setMessageInput(e.target.value)}
+                                            placeholder='Type a message or drag an image here...'
+                                        />
+                                    )}
+                                </div>
+
                                 <button className='buttton'>
                                     <svg className='svg-button-send' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />

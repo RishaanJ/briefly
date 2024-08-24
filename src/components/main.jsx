@@ -134,7 +134,6 @@ function Main() {
         console.log(groupChat);
         const groupChatRef = doc(db, "Chats", groupChat);
     
-    
         const unsubscribe = onSnapshot(groupChatRef, (docSnapshot) => {
             const data = docSnapshot.data();
             if (data && data.messages) {
@@ -146,7 +145,8 @@ function Main() {
         });
     
         return unsubscribe; 
-    };    
+    };
+     
     useEffect(() => {
         console.log(`Loading ${groupChat}`)
         const unsubscribe = fetchMessages();
@@ -216,52 +216,60 @@ function Main() {
             const sanitizedMessage = filter.clean(message);
             const now = new Date();
             const timestamp = now.getTime();
-
+    
             if (userDetails && auth.currentUser) {
                 if (message.startsWith("!clear") && auth.currentUser.uid === "KNlXRhe561QKimrgCXn7gOjvJVb2") {
                     const parts = message.split(" ");
                     const numMessages = parseInt(parts[1], 10);
-
+                    
                     if (isNaN(numMessages) || numMessages <= 0) {
                         toast.error("Invalid number of messages to clear", { position: "top-right" });
                         return;
                     }
-
+    
                     const messagesRef = collection(db, "Chats", groupChat, "messages");
                     const q = query(messagesRef, orderBy("REALtime", "desc"));
                     const snapshot = await getDocs(q);
-
+    
                     const messages = snapshot.docs
                         .map(doc => ({ id: doc.id, ...doc.data() }))
                         .sort((a, b) => b.REALtime - a.REALtime);
-
+    
                     const messagesToDelete = messages.slice(0, numMessages);
-
+    
+                    console.log("Messages to delete:", messagesToDelete);
+    
                     for (const msg of messagesToDelete) {
-                        await deleteDoc(doc(db, "Chats", groupChat, "messages", msg.id));
+                        console.log("Attempting to delete message ID:", msg.id);
+                        try {
+                            await deleteDoc(doc(db, "Chats", groupChat, "messages", msg.id));
+                            console.log("Successfully deleted message ID:", msg.id);
+                        } catch (error) {
+                            console.error("Error deleting message ID:", msg.id, "Error:", error);
+                        }
                     }
-
+    
                     toast.success(`${numMessages} messages cleared`, { position: "top-right" });
                 } else {
                     // Create a new message object
                     const newMessage = {
                         id: generateUID(),
                         messageContent: sanitizedMessage,
-                        imageUrl: imageUrl || null, // Set imageUrl if provided
+                        imageUrl: imageUrl || null,
                         date: getCurrentTime(),
                         profilePic: userDetails.pfp,
                         senderUid: auth.currentUser.uid,
                         REALtime: timestamp
                     };
-
+    
                     // Reference to the group chat document
                     const groupChatRef = doc(db, "Chats", groupChat);
-
+    
                     // Update the `messages` map field inside the `groupChat` document
                     await updateDoc(groupChatRef, {
                         [`messages.${newMessage.id}`]: newMessage
                     });
-
+    
                     console.log("Message sent successfully");
                 }
             }
@@ -269,6 +277,8 @@ function Main() {
             console.error("Error sending message:", error);
         }
     }
+    
+    
 
     
     
@@ -359,6 +369,7 @@ function Main() {
                                         Pfp={msg.profilePic}
                                         Time={msg.date}
                                         sent={msg.senderUid === auth.currentUser.uid} 
+                                        imageUrl={msg.imageUrl}
                                     />
                                 ))}
                                 <div ref={bottomRef} />

@@ -2,15 +2,27 @@ import React, { useState, useEffect } from 'react';
 import '../componentscss/register.css';
 import Logo from "../assets/BRIEFLY.png"
 import { ToastContainer, toast } from 'react-toastify';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import {auth, db} from './firebase';
 import 'react-toastify/dist/ReactToastify.css';
 import {setDoc, doc} from "firebase/firestore"
+import { useNavigate } from 'react-router-dom';
+
+
 
 function Register() {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigate("/main"); 
+            }
+        });
+        return () => unsubscribe(); 
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

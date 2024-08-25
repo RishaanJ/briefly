@@ -110,6 +110,10 @@ html {
   border-radius: 25px;
 }
 
+marquee{
+  font-size: 25px;
+}
+
 .button-19 {
   appearance: button;
   background-color: #1899D6;

@@ -3,12 +3,14 @@ import '../componentscss/register.css';
 import Logo from "../assets/BRIEFLY.png"
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import {auth} from './firebase'
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,6 +24,15 @@ function Login() {
 
         }
     };
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigate("/main"); 
+            }
+        });
+        return () => unsubscribe(); 
+    }, [navigate]);
     useEffect(() => {
         document.title = "Login - Briefly"
     })

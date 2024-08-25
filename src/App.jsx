@@ -20,7 +20,7 @@ import pfp4 from './assets/pfp4.png'
 
 function App() {
   const [count, setCount] = useState(0);
-
+  const marqueeMessage = '🚨 UPDATE: IMAGE MESSAGING ';
   return (
     <Router>
       <Routes>
@@ -36,6 +36,11 @@ function App() {
           element={
             <>
               <div className='toppp'>
+                  <marquee behavior="scroll" direction="left" scrollamount="10" loop="infinite">
+                    {[...Array(20)].map((_, i) => (
+                      <span key={i}>{marqueeMessage}</span>
+                    ))}
+                  </marquee>
                   <img className="brieflybiglogo" src={Logo}/>
                   <h1 className='tagline'>Connect. Collaborate. Conclude.</h1>
 

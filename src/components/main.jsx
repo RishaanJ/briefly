@@ -213,6 +213,7 @@ function Main() {
     async function sendMessage(message, imageUrl = null) {
         try {
             console.log("Sending message:", message, "Image URL:", imageUrl);
+            console.log(message)
             const sanitizedMessage = filter.clean(message);
             const now = new Date();
             const timestamp = now.getTime();
@@ -251,7 +252,6 @@ function Main() {
     
                     toast.success(`${numMessages} messages cleared`, { position: "top-right" });
                 } else {
-                    // Create a new message object
                     const newMessage = {
                         id: generateUID(),
                         messageContent: sanitizedMessage,
